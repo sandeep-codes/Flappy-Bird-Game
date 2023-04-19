@@ -14,6 +14,8 @@ GAME_SOUNDS = {}
 PLAYER = 'gallery/sprites/bird.png'
 BACKGROUND = 'gallery/sprites/background.png'
 PIPE = 'gallery/sprites/pipe.png'
+PIPE1 = 'gallery/sprites/pipe2.png'
+PIPE2 = 'gallery/sprites/pipe3.png'
 
 def welcomeScreen():
     """
@@ -36,7 +38,7 @@ def welcomeScreen():
             elif event.type==KEYDOWN and (event.key==K_SPACE or event.key == K_UP):
                 return
             else:
-                SCREEN.blit(GAME_SPRITES['background'], (0, 0))    
+                SCREEN.blit(GAME_SPRITES['background'][0], (0, 0))    
                 SCREEN.blit(GAME_SPRITES['player'], (playerx, playery))     
                 SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
                 SCREEN.blit(GAME_SPRITES['message'], (messagex,messagey ))   
@@ -125,11 +127,20 @@ def mainGame():
             upperPipes.pop(0)
             lowerPipes.pop(0)
         
-        # Lets blit our sprites now
-        SCREEN.blit(GAME_SPRITES['background'], (0, 0))
+        # Lets blit our sprites now 
+        # showing different sprites based on level
+        pp = 'pipe1'
+        if score<11:
+            SCREEN.blit(GAME_SPRITES['background'][0], (0, 0))
+        elif score<21:
+            SCREEN.blit(GAME_SPRITES['background'][1], (0, 0))
+            pp = 'pipe2'
+        else:
+            SCREEN.blit(GAME_SPRITES['background'][2], (0, 0))
+            pp = 'pipe'
         for upperPipe, lowerPipe in zip(upperPipes, lowerPipes):
-            SCREEN.blit(GAME_SPRITES['pipe'][0], (upperPipe['x'], upperPipe['y']))
-            SCREEN.blit(GAME_SPRITES['pipe'][1], (lowerPipe['x'], lowerPipe['y']))
+            SCREEN.blit(GAME_SPRITES[pp][0], (upperPipe['x'], upperPipe['y']))
+            SCREEN.blit(GAME_SPRITES[pp][1], (lowerPipe['x'], lowerPipe['y']))
 
         SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))
         SCREEN.blit(GAME_SPRITES['player'], (playerx, playery))
@@ -206,6 +217,12 @@ if __name__ == "__main__":
     GAME_SPRITES['pipe'] =(pygame.transform.rotate(pygame.image.load( PIPE).convert_alpha(), 180), 
     pygame.image.load(PIPE).convert_alpha()
     )
+    GAME_SPRITES['pipe1'] =(pygame.transform.rotate(pygame.image.load( PIPE1).convert_alpha(), 180), 
+    pygame.image.load(PIPE1).convert_alpha()
+    )
+    GAME_SPRITES['pipe2'] =(pygame.transform.rotate(pygame.image.load(PIPE2).convert_alpha(), 180), 
+    pygame.image.load(PIPE2).convert_alpha()
+    )
 
     # Game sounds
     GAME_SOUNDS['die'] = pygame.mixer.Sound('gallery/audio/die.wav')
@@ -214,7 +231,9 @@ if __name__ == "__main__":
     GAME_SOUNDS['swoosh'] = pygame.mixer.Sound('gallery/audio/swoosh.wav')
     GAME_SOUNDS['wing'] = pygame.mixer.Sound('gallery/audio/wing.wav')
 
-    GAME_SPRITES['background'] = pygame.image.load(BACKGROUND).convert()
+    GAME_SPRITES['background'] = (pygame.image.load('gallery/sprites/background1.png').convert_alpha(),
+    pygame.image.load('gallery/sprites/background2.png').convert_alpha(),
+    pygame.image.load('gallery/sprites/background3.png').convert_alpha())
     GAME_SPRITES['player'] = pygame.image.load(PLAYER).convert_alpha()
 
     while True:
