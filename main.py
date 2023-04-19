@@ -66,16 +66,16 @@ def mainGame():
         {'x': SCREENWIDTH+200+(SCREENWIDTH/2), 'y':newPipe2[1]['y']},
     ]
 
-    pipeVelX = -4
-
     playerVelY = -9
     playerMaxVelY = 10
     playerMinVelY = -8
     playerAccY = 1
-
+    pipeVelX = -4
     playerFlapAccv = -8 # velocity while flapping
     playerFlapped = False # It is true only when the bird is flapping
-
+    # variables used in bird animation
+    fly=6  #used to manage the speed of bird's wing
+    cnt=0  #storing duration of not-flapping
 
     while True:
         for event in pygame.event.get():
@@ -94,7 +94,7 @@ def mainGame():
             return     
 
         #check for score
-        playerMidPos = playerx + GAME_SPRITES['player'].get_width()/2
+        playerMidPos = playerx + GAME_SPRITES['player1'].get_width()/2
         for pipe in upperPipes:
             pipeMidPos = pipe['x'] + GAME_SPRITES['pipe'][0].get_width()/2
             if pipeMidPos<= playerMidPos < pipeMidPos +4:
@@ -105,9 +105,9 @@ def mainGame():
 
         if playerVelY <playerMaxVelY and not playerFlapped:
             playerVelY += playerAccY
-
+        flap = playerFlapped 
         if playerFlapped:
-            playerFlapped = False            
+            playerFlapped = False     
         playerHeight = GAME_SPRITES['player'].get_height()
         playery = playery + min(playerVelY, GROUNDY - playery - playerHeight)
 
@@ -143,7 +143,23 @@ def mainGame():
             SCREEN.blit(GAME_SPRITES[pp][1], (lowerPipe['x'], lowerPipe['y']))
 
         SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))
-        SCREEN.blit(GAME_SPRITES['player'], (playerx, playery))
+        if(not flap):
+            cnt+=1
+        else:
+            cnt=0
+        if fly==6 or fly==5 or cnt>12:
+            SCREEN.blit(GAME_SPRITES['player1'], (playerx, playery))
+            fly=fly-1
+        elif fly==4 or fly==3:
+            SCREEN.blit(GAME_SPRITES['player'], (playerx, playery))
+            fly= fly-1
+        elif fly==2 or fly==1:
+            SCREEN.blit(GAME_SPRITES['player0'], (playerx, playery))
+            fly=fly-1
+        if fly<=0:
+            fly=6
+        if cnt<5:
+            fly = fly-1
         myDigits = [int(x) for x in list(str(score))]
         width = 0
         for digit in myDigits:
@@ -157,7 +173,7 @@ def mainGame():
         FPSCLOCK.tick(FPS)
 
 def isCollide(playerx, playery, upperPipes, lowerPipes):
-    if playery> GROUNDY - 25  or playery<0:
+    if playery> GROUNDY - 26  or playery<0:
         GAME_SOUNDS['hit'].play()
         return True
     
@@ -235,6 +251,9 @@ if __name__ == "__main__":
     pygame.image.load('gallery/sprites/background2.png').convert_alpha(),
     pygame.image.load('gallery/sprites/background3.png').convert_alpha())
     GAME_SPRITES['player'] = pygame.image.load(PLAYER).convert_alpha()
+    GAME_SPRITES['player1'] = pygame.image.load('gallery/sprites/bird1.png').convert_alpha()
+    GAME_SPRITES['player0'] = pygame.image.load('gallery/sprites/bird0.png').convert_alpha()
+    GAME_SPRITES['crash'] = pygame.image.load('gallery/sprites/boom.png').convert_alpha()
 
     while True:
         welcomeScreen() # Shows welcome screen to the user until he presses a button
